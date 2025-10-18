@@ -1,0 +1,23 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(flutter pub:*)",
+      "Bash(tree:*)",
+      "Bash(flutter analyze:*)",
+      "Bash(flutter:*)",
+      "Bash(./gradlew:*)",
+      "Bash(for file in lib/app/features/clients/views/edit_client_view.dart lib/app/features/onboarding/views/onboarding_view.dart lib/app/core/widgets/custom_text_field.dart)",
+      "Bash(do)",
+      "Bash(if [ -f \"$file\" ])",
+      "Bash(then)",
+      "Bash(if ! grep -q \"phosphor_flutter\" \"$file\")",
+      "Bash(fi)",
+      "Bash(__NEW_LINE__ sed -i '' 's/Icons\\.\\([a-zA-Z_]*\\)/PhosphorIconsRegular.\\1/g' \"$file\")",
+      "Bash(echo:*)",
+      "Bash(else)",
+      "Bash(done)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
