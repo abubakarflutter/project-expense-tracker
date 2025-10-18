@@ -6,23 +6,23 @@ import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/custom_button.dart';
 import '../../../core/widgets/custom_text_field.dart';
 import '../../../core/widgets/gradient_app_bar.dart';
-import '../controllers/add_invoice_controller.dart';
+import '../controllers/edit_invoice_controller.dart';
 
-class AddInvoiceView extends StatelessWidget {
-  const AddInvoiceView({super.key});
+class EditInvoiceView extends StatelessWidget {
+  const EditInvoiceView({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.put(AddInvoiceController());
+    final controller = Get.put(EditInvoiceController());
 
     return Scaffold(
       appBar: GradientAppBar(
-        title: 'Add Invoice',
+        title: 'Edit Invoice',
         showBackButton: true,
         actions: [
           TextButton(
-            onPressed: controller.clearFields,
-            child: const Text('Clear'),
+            onPressed: controller.resetFields,
+            child: const Text('Reset'),
           ),
         ],
       ),
@@ -50,7 +50,7 @@ class AddInvoiceView extends StatelessWidget {
                           borderRadius: BorderRadius.circular(10),
                         ),
                         child: const Icon(
-                          PhosphorIconsRegular.receiptX,
+                          PhosphorIconsRegular.receipt,
                           color: Colors.white,
                           size: 28,
                         ),
@@ -61,7 +61,7 @@ class AddInvoiceView extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'New Invoice',
+                              'Edit Invoice',
                               style: TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.w700,
@@ -70,7 +70,7 @@ class AddInvoiceView extends StatelessWidget {
                             ),
                             SizedBox(height: 4),
                             Text(
-                              'Fill in the invoice details',
+                              'Update invoice details',
                               style: TextStyle(
                                 fontSize: 14,
                                 color: AppTheme.textSecondary,
@@ -101,7 +101,7 @@ class AddInvoiceView extends StatelessWidget {
               CustomTextField(
                 controller: controller.invoiceNumberController,
                 label: 'Invoice Number',
-                hint: 'Auto-generated',
+                hint: 'Invoice number',
                 prefixIcon: const Icon(PhosphorIconsRegular.tag),
                 validator: controller.validateInvoiceNumber,
                 textInputAction: TextInputAction.next,
@@ -114,6 +114,7 @@ class AddInvoiceView extends StatelessWidget {
                 final projects = controller.projectsList;
 
                 return DropdownButtonFormField<String>(
+                  value: controller.selectedProject.value?.id,
                   decoration: InputDecoration(
                     labelText: 'Project',
                     hintText: 'Select a project',
@@ -218,67 +219,67 @@ class AddInvoiceView extends StatelessWidget {
               const SizedBox(height: 16),
 
               // Payment method dropdown
-              DropdownButtonFormField<String>(
-                initialValue: controller.selectedPaymentMethod.value,
-                decoration: InputDecoration(
-                  labelText: 'Payment Method',
-                  prefixIcon: const Icon(PhosphorIconsRegular.creditCard),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-                items: controller.paymentMethodOptions.map((method) {
-                  return DropdownMenuItem<String>(
-                    value: method['value'],
-                    child: Text(method['label']!),
-                  );
-                }).toList(),
-                onChanged: (value) {
-                  if (value != null) {
-                    controller.setSelectedPaymentMethod(value);
-                  }
-                },
-              ),
+              Obx(() => DropdownButtonFormField<String>(
+                    value: controller.selectedPaymentMethod.value,
+                    decoration: InputDecoration(
+                      labelText: 'Payment Method',
+                      prefixIcon: const Icon(PhosphorIconsRegular.creditCard),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    items: controller.paymentMethodOptions.map((method) {
+                      return DropdownMenuItem<String>(
+                        value: method['value'],
+                        child: Text(method['label']!),
+                      );
+                    }).toList(),
+                    onChanged: (value) {
+                      if (value != null) {
+                        controller.setSelectedPaymentMethod(value);
+                      }
+                    },
+                  )),
 
               const SizedBox(height: 16),
 
               // Status dropdown
-              DropdownButtonFormField<String>(
-                initialValue: controller.selectedStatus.value,
-                decoration: InputDecoration(
-                  labelText: 'Status',
-                  prefixIcon: const Icon(PhosphorIconsRegular.info),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-                items: controller.statusOptions.map((status) {
-                  return DropdownMenuItem<String>(
-                    value: status,
-                    child: Row(
-                      children: [
-                        Container(
-                          width: 8,
-                          height: 8,
-                          decoration: BoxDecoration(
-                            color: status == 'Paid'
-                                ? AppTheme.successColor
-                                : AppTheme.warningColor,
-                            shape: BoxShape.circle,
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        Text(status),
-                      ],
+              Obx(() => DropdownButtonFormField<String>(
+                    value: controller.selectedStatus.value,
+                    decoration: InputDecoration(
+                      labelText: 'Status',
+                      prefixIcon: const Icon(PhosphorIconsRegular.info),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
                     ),
-                  );
-                }).toList(),
-                onChanged: (value) {
-                  if (value != null) {
-                    controller.setSelectedStatus(value);
-                  }
-                },
-              ),
+                    items: controller.statusOptions.map((status) {
+                      return DropdownMenuItem<String>(
+                        value: status,
+                        child: Row(
+                          children: [
+                            Container(
+                              width: 8,
+                              height: 8,
+                              decoration: BoxDecoration(
+                                color: status == 'Paid'
+                                    ? AppTheme.successColor
+                                    : AppTheme.warningColor,
+                                shape: BoxShape.circle,
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Text(status),
+                          ],
+                        ),
+                      );
+                    }).toList(),
+                    onChanged: (value) {
+                      if (value != null) {
+                        controller.setSelectedStatus(value);
+                      }
+                    },
+                  )),
 
               const SizedBox(height: 16),
 
@@ -294,10 +295,10 @@ class AddInvoiceView extends StatelessWidget {
 
               const SizedBox(height: 32),
 
-              // Save button
+              // Update button
               Obx(() => CustomButton(
-                    text: 'Add Invoice',
-                    onPressed: controller.saveInvoice,
+                    text: 'Update Invoice',
+                    onPressed: controller.updateInvoice,
                     isLoading: controller.isLoading.value,
                     icon: PhosphorIconsRegular.check,
                   )),

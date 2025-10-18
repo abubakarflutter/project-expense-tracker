@@ -214,11 +214,21 @@ class StorageService extends GetxService {
       throw Exception('Invoice with id ${invoice.id} not found');
     }
 
+    // Get the old invoice to check if project changed
+    final oldInvoice = invoices[index];
+    final oldProjectId = oldInvoice.projectId;
+    final newProjectId = invoice.projectId;
+
     invoices[index] = invoice;
     await _box.write(_invoicesKey, invoices.map((i) => i.toJson()).toList());
 
-    // Update the project's totalReceived
-    await _updateProjectTotalReceived(invoice.projectId);
+    // Update the old project's totalReceived if project changed
+    if (oldProjectId != newProjectId) {
+      await _updateProjectTotalReceived(oldProjectId);
+    }
+
+    // Update the new project's totalReceived
+    await _updateProjectTotalReceived(newProjectId);
   }
 
   /// Delete an invoice by ID

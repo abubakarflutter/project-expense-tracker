@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:expandable/expandable.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/custom_card.dart';
+import '../../../core/widgets/gradient_app_bar.dart';
+import '../../../core/widgets/gradient_fab.dart';
 import '../controllers/projects_controller.dart';
 
 // Helper function to capitalize strings
@@ -20,9 +23,8 @@ class ProjectsPage extends StatelessWidget {
     final controller = Get.put(ProjectsController());
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Projects'),
-        elevation: 0,
+      appBar: GradientAppBar(
+        title: 'Projects',
         actions: [
           IconButton(
             icon: const Icon(PhosphorIconsRegular.arrowsClockwise),
@@ -218,11 +220,11 @@ class ProjectsPage extends StatelessWidget {
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton.extended(
+      floatingActionButton: GradientFAB(
         heroTag: 'projects_fab',
         onPressed: controller.navigateToAddProject,
-        icon: const Icon(PhosphorIconsRegular.plus),
-        label: const Text('Add Project'),
+        icon: PhosphorIconsRegular.plus,
+        label: 'Add Project',
       ),
     );
   }
@@ -258,31 +260,18 @@ class ProjectsPage extends StatelessWidget {
         statusColor = AppTheme.textSecondary;
     }
 
-    return Container(
-      decoration: BoxDecoration(
-        gradient: AppTheme.primaryGradient,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: AppTheme.primaryColor.withValues(alpha: 0.3),
-            blurRadius: 8,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Container(
-        margin: const EdgeInsets.all(2),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(14),
+    return ExpandableNotifier(
+      child: Card(
+        elevation: 2,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
         ),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Project name and status
-              Row(
+        margin: EdgeInsets.zero,
+        child: Expandable(
+          collapsed: ExpandableButton(
+            child: Container(
+              padding: const EdgeInsets.all(16),
+              child: Row(
                 children: [
                   Expanded(
                     child: Column(
@@ -291,7 +280,7 @@ class ProjectsPage extends StatelessWidget {
                         Text(
                           project.name,
                           style: const TextStyle(
-                            fontSize: 18,
+                            fontSize: 16,
                             fontWeight: FontWeight.w600,
                             color: AppTheme.textPrimary,
                           ),
@@ -301,14 +290,14 @@ class ProjectsPage extends StatelessWidget {
                           children: [
                             const Icon(
                               PhosphorIconsRegular.user,
-                              size: 16,
+                              size: 14,
                               color: AppTheme.textSecondary,
                             ),
                             const SizedBox(width: 4),
                             Text(
                               clientName,
                               style: const TextStyle(
-                                fontSize: 14,
+                                fontSize: 13,
                                 color: AppTheme.textSecondary,
                               ),
                             ),
@@ -320,8 +309,8 @@ class ProjectsPage extends StatelessWidget {
                   // Status badge with gradient
                   Container(
                     padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 6,
+                      horizontal: 10,
+                      vertical: 4,
                     ),
                     decoration: BoxDecoration(
                       gradient: project.status.toLowerCase() == 'active'
@@ -334,124 +323,205 @@ class ProjectsPage extends StatelessWidget {
                     child: Text(
                       _capitalize(project.status),
                       style: const TextStyle(
-                        fontSize: 12,
+                        fontSize: 11,
                         fontWeight: FontWeight.w600,
                         color: Colors.white,
                       ),
                     ),
                   ),
-                ],
-              ),
-
-              const SizedBox(height: 16),
-
-              // Budget information
-              Row(
-                children: [
-                  Expanded(
-                    child: _buildBudgetItem(
-                      'Total Budget',
-                      currencyFormatter.format(project.totalBudget),
-                      AppTheme.primaryColor,
-                    ),
-                  ),
-                  Expanded(
-                    child: _buildBudgetItem(
-                      'Received',
-                      currencyFormatter.format(project.totalReceived),
-                      AppTheme.successColor,
-                    ),
-                  ),
-                  Expanded(
-                    child: _buildBudgetItem(
-                      'Remaining',
-                      currencyFormatter.format(project.remainingBudget),
-                      AppTheme.warningColor,
-                    ),
+                  const SizedBox(width: 8),
+                  // Expand icon
+                  Icon(
+                    PhosphorIconsRegular.caretDown,
+                    size: 20,
+                    color: AppTheme.textSecondary,
                   ),
                 ],
               ),
-
-              const SizedBox(height: 16),
-
-              // Progress bar
-              Column(
+            ),
+          ),
+          expanded: ExpandableButton(
+            child: Container(
+              padding: const EdgeInsets.all(16),
+              child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // Header
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              project.name,
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                color: AppTheme.textPrimary,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Row(
+                              children: [
+                                const Icon(
+                                  PhosphorIconsRegular.user,
+                                  size: 14,
+                                  color: AppTheme.textSecondary,
+                                ),
+                                const SizedBox(width: 4),
+                                Text(
+                                  clientName,
+                                  style: const TextStyle(
+                                    fontSize: 13,
+                                    color: AppTheme.textSecondary,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                      // Status badge
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 4,
+                        ),
+                        decoration: BoxDecoration(
+                          gradient: project.status.toLowerCase() == 'active'
+                              ? AppTheme.successGradient
+                              : project.status.toLowerCase() == 'completed'
+                                  ? AppTheme.primaryGradient
+                                  : AppTheme.warningGradient,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Text(
+                          _capitalize(project.status),
+                          style: const TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      // Collapse icon
+                      Icon(
+                        PhosphorIconsRegular.caretUp,
+                        size: 20,
+                        color: AppTheme.textSecondary,
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  const Divider(height: 1),
+                  const SizedBox(height: 16),
+                  // Budget information
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _buildBudgetItem(
+                          'Budget',
+                          currencyFormatter.format(project.totalBudget),
+                          AppTheme.primaryColor,
+                        ),
+                      ),
+                      Expanded(
+                        child: _buildBudgetItem(
+                          'Received',
+                          currencyFormatter.format(project.totalReceived),
+                          AppTheme.successColor,
+                        ),
+                      ),
+                      Expanded(
+                        child: _buildBudgetItem(
+                          'Remaining',
+                          currencyFormatter.format(project.remainingBudget),
+                          AppTheme.warningColor,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  // Progress bar
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text(
+                            'Progress',
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w500,
+                              color: AppTheme.textSecondary,
+                            ),
+                          ),
+                          Text(
+                            '${(progress * 100).toStringAsFixed(0)}%',
+                            style: const TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              color: AppTheme.textPrimary,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(4),
+                        child: LinearProgressIndicator(
+                          value: progress,
+                          backgroundColor: Colors.grey.shade200,
+                          valueColor: AlwaysStoppedAnimation<Color>(statusColor),
+                          minHeight: 8,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  const Divider(height: 1),
+                  const SizedBox(height: 12),
+                  // Action buttons
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text(
-                        'Progress',
-                        style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w500,
-                          color: AppTheme.textSecondary,
-                        ),
-                      ),
-                      Text(
-                        '${(progress * 100).toStringAsFixed(0)}%',
-                        style: const TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                          color: AppTheme.textPrimary,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(4),
-                    child: LinearProgressIndicator(
-                      value: progress,
-                      backgroundColor: Colors.grey.shade200,
-                      valueColor: AlwaysStoppedAnimation<Color>(statusColor),
-                      minHeight: 8,
-                    ),
-                  ),
-                ],
-              ),
-
-              const SizedBox(height: 16),
-              const Divider(height: 1),
-              const SizedBox(height: 12),
-
-              // Action buttons
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  TextButton.icon(
-                    onPressed: () => controller.navigateToProjectDetails(project),
-                    icon: const Icon(PhosphorIconsRegular.eye, size: 18),
-                    label: const Text('View'),
-                    style: TextButton.styleFrom(
-                      foregroundColor: AppTheme.accentColor,
-                    ),
-                  ),
-                  Row(
-                    children: [
                       TextButton.icon(
-                        onPressed: () => controller.navigateToEditProject(project),
-                        icon: const Icon(PhosphorIconsRegular.pencilSimple, size: 18),
-                        label: const Text('Edit'),
+                        onPressed: () => controller.navigateToProjectDetails(project),
+                        icon: const Icon(PhosphorIconsRegular.eye, size: 18),
+                        label: const Text('View'),
                         style: TextButton.styleFrom(
-                          foregroundColor: AppTheme.primaryColor,
+                          foregroundColor: AppTheme.accentColor,
                         ),
                       ),
-                      const SizedBox(width: 4),
-                      TextButton.icon(
-                        onPressed: () => controller.deleteProject(project.id),
-                        icon: const Icon(PhosphorIconsRegular.trash, size: 18),
-                        label: const Text('Delete'),
-                        style: TextButton.styleFrom(
-                          foregroundColor: AppTheme.errorColor,
-                        ),
+                      Row(
+                        children: [
+                          TextButton.icon(
+                            onPressed: () => controller.navigateToEditProject(project),
+                            icon: const Icon(PhosphorIconsRegular.pencilSimple, size: 18),
+                            label: const Text('Edit'),
+                            style: TextButton.styleFrom(
+                              foregroundColor: AppTheme.primaryColor,
+                            ),
+                          ),
+                          const SizedBox(width: 4),
+                          TextButton.icon(
+                            onPressed: () => controller.deleteProject(project.id),
+                            icon: const Icon(PhosphorIconsRegular.trash, size: 18),
+                            label: const Text('Delete'),
+                            style: TextButton.styleFrom(
+                              foregroundColor: AppTheme.errorColor,
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
                 ],
               ),
-            ],
+            ),
           ),
         ),
       ),

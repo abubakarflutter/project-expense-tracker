@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/custom_button.dart';
 import '../../../core/widgets/custom_text_field.dart';
+import '../../../core/widgets/gradient_app_bar.dart';
 import '../controllers/add_client_controller.dart';
 
 class AddClientView extends StatelessWidget {
@@ -14,9 +15,9 @@ class AddClientView extends StatelessWidget {
     final controller = Get.put(AddClientController());
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Add Client'),
-        elevation: 0,
+      appBar: GradientAppBar(
+        title: 'Add Client',
+        showBackButton: true,
         actions: [
           TextButton(
             onPressed: controller.clearFields,

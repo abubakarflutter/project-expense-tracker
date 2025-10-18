@@ -6,6 +6,7 @@ import '../../../data/models/invoice_model.dart';
 import '../../../data/models/project_model.dart';
 import '../../../data/services/storage_service.dart';
 import '../views/add_invoice_view.dart';
+import '../views/edit_invoice_view.dart';
 
 class InvoicesController extends GetxController {
   final StorageService _storageService = Get.find<StorageService>();
@@ -170,11 +171,11 @@ class InvoicesController extends GetxController {
 
   /// Navigate to edit invoice
   void navigateToEditInvoice(InvoiceModel invoice) {
-    // Edit view not implemented yet
-    Get.snackbar(
-      'Coming Soon',
-      'Invoice editing will be available in a future update',
-      snackPosition: SnackPosition.BOTTOM,
-    );
+    Get.to(
+      () => const EditInvoiceView(),
+      arguments: invoice,
+      transition: Transition.rightToLeft,
+      duration: const Duration(milliseconds: 300),
+    )?.then((_) => loadInvoices());
   }
 }

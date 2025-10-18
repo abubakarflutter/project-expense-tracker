@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:expandable/expandable.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/custom_card.dart';
+import '../../../core/widgets/gradient_app_bar.dart';
+import '../../../core/widgets/gradient_fab.dart';
 import '../controllers/invoices_controller.dart';
 
 // Helper function to capitalize strings
@@ -20,9 +23,8 @@ class InvoicesPage extends StatelessWidget {
     final controller = Get.put(InvoicesController());
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Invoices'),
-        elevation: 0,
+      appBar: GradientAppBar(
+        title: 'Invoices',
         actions: [
           IconButton(
             icon: const Icon(PhosphorIconsRegular.arrowsClockwise),
@@ -111,11 +113,11 @@ class InvoicesPage extends StatelessWidget {
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton.extended(
+      floatingActionButton: GradientFAB(
         heroTag: 'invoices_fab',
         onPressed: controller.navigateToAddInvoice,
-        icon: const Icon(PhosphorIconsRegular.plus),
-        label: const Text('Add Invoice'),
+        icon: PhosphorIconsRegular.plus,
+        label: 'Add Invoice',
       ),
     );
   }
@@ -136,223 +138,247 @@ class InvoicesPage extends StatelessWidget {
     final isPaid = invoice.status.toLowerCase() == 'paid';
     final statusColor = isPaid ? AppTheme.successColor : AppTheme.warningColor;
 
-    return Container(
-      decoration: BoxDecoration(
-        gradient: isPaid ? AppTheme.successGradient : AppTheme.warningGradient,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: statusColor.withValues(alpha: 0.3),
-            blurRadius: 8,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Container(
-        margin: const EdgeInsets.all(2),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(14),
+    return ExpandableNotifier(
+      child: Card(
+        elevation: 2,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
         ),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Invoice number and status
-              Row(
+        margin: EdgeInsets.zero,
+        child: Expandable(
+          collapsed: ExpandableButton(
+            child: Container(
+              padding: const EdgeInsets.all(16),
+              child: Row(
                 children: [
                   Expanded(
-                    child: Row(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Container(
-                          padding: const EdgeInsets.all(10),
-                          decoration: BoxDecoration(
-                            gradient: isPaid ? AppTheme.successGradient : AppTheme.warningGradient,
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: const Icon(
-                            PhosphorIconsRegular.receipt,
-                            color: Colors.white,
-                            size: 20,
+                        Text(
+                          'Invoice #${invoice.invoiceNumber}',
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: AppTheme.textPrimary,
                           ),
                         ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Invoice #${invoice.invoiceNumber}',
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600,
-                                  color: AppTheme.textPrimary,
-                                ),
-                              ),
-                              const SizedBox(height: 2),
-                              Text(
-                                dateFormatter.format(invoice.paymentDate),
-                                style: const TextStyle(
-                                  fontSize: 13,
-                                  color: AppTheme.textSecondary,
-                                ),
-                              ),
-                            ],
+                        const SizedBox(height: 4),
+                        Text(
+                          dateFormatter.format(invoice.paymentDate),
+                          style: const TextStyle(
+                            fontSize: 13,
+                            color: AppTheme.textSecondary,
                           ),
                         ),
                       ],
                     ),
                   ),
-                  // Status badge with gradient
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 6,
-                    ),
-                    decoration: BoxDecoration(
-                      gradient: isPaid ? AppTheme.successGradient : AppTheme.warningGradient,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Text(
-                      _capitalize(invoice.status),
-                      style: const TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-
-              const SizedBox(height: 12),
-
-              // Project and client info
-              Row(
-                children: [
-                  const Icon(
-                    PhosphorIconsRegular.folder,
-                    size: 16,
-                    color: AppTheme.textSecondary,
-                  ),
-                  const SizedBox(width: 6),
-                  Expanded(
-                    child: Text(
-                      projectName,
-                      style: const TextStyle(
-                        fontSize: 14,
-                        color: AppTheme.textPrimary,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-
-              const SizedBox(height: 6),
-
-              Row(
-                children: [
-                  const Icon(
-                    PhosphorIconsRegular.user,
-                    size: 16,
-                    color: AppTheme.textSecondary,
-                  ),
-                  const SizedBox(width: 6),
-                  Expanded(
-                    child: Text(
-                      clientName,
-                      style: const TextStyle(
-                        fontSize: 14,
-                        color: AppTheme.textSecondary,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-
-              const SizedBox(height: 12),
-
-              // Amount and payment method
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
                   Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
-                      const Text(
-                        'Amount',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: AppTheme.textSecondary,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
                       Text(
                         currencyFormatter.format(invoice.amount),
                         style: TextStyle(
-                          fontSize: 18,
+                          fontSize: 16,
                           fontWeight: FontWeight.w700,
                           color: statusColor,
                         ),
                       ),
-                    ],
-                  ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      const Text(
-                        'Payment Method',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: AppTheme.textSecondary,
-                          fontWeight: FontWeight.w500,
+                      const SizedBox(height: 4),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 4,
+                        ),
+                        decoration: BoxDecoration(
+                          gradient: isPaid ? AppTheme.successGradient : AppTheme.warningGradient,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Text(
+                          _capitalize(invoice.status),
+                          style: const TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white,
+                          ),
                         ),
                       ),
-                      const SizedBox(height: 4),
+                    ],
+                  ),
+                  const SizedBox(width: 8),
+                  // Expand icon
+                  Icon(
+                    PhosphorIconsRegular.caretDown,
+                    size: 20,
+                    color: AppTheme.textSecondary,
+                  ),
+                ],
+              ),
+            ),
+          ),
+          expanded: ExpandableButton(
+            child: Container(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Header
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Invoice #${invoice.invoiceNumber}',
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                color: AppTheme.textPrimary,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              dateFormatter.format(invoice.paymentDate),
+                              style: const TextStyle(
+                                fontSize: 13,
+                                color: AppTheme.textSecondary,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Text(
+                            currencyFormatter.format(invoice.amount),
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w700,
+                              color: statusColor,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 4,
+                            ),
+                            decoration: BoxDecoration(
+                              gradient: isPaid ? AppTheme.successGradient : AppTheme.warningGradient,
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Text(
+                              _capitalize(invoice.status),
+                              style: const TextStyle(
+                                fontSize: 11,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(width: 8),
+                      // Collapse icon
+                      Icon(
+                        PhosphorIconsRegular.caretUp,
+                        size: 20,
+                        color: AppTheme.textSecondary,
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  const Divider(height: 1),
+                  const SizedBox(height: 16),
+                  // Project and client info
+                  Row(
+                    children: [
+                      const Icon(
+                        PhosphorIconsRegular.folder,
+                        size: 18,
+                        color: AppTheme.textSecondary,
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Text(
+                          projectName,
+                          style: const TextStyle(
+                            fontSize: 14,
+                            color: AppTheme.textPrimary,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  Row(
+                    children: [
+                      const Icon(
+                        PhosphorIconsRegular.user,
+                        size: 18,
+                        color: AppTheme.textSecondary,
+                      ),
+                      const SizedBox(width: 10),
+                      Text(
+                        clientName,
+                        style: const TextStyle(
+                          fontSize: 14,
+                          color: AppTheme.textSecondary,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  Row(
+                    children: [
+                      const Icon(
+                        PhosphorIconsRegular.creditCard,
+                        size: 18,
+                        color: AppTheme.textSecondary,
+                      ),
+                      const SizedBox(width: 10),
                       Text(
                         invoice.formattedPaymentMethod,
                         style: const TextStyle(
                           fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                          color: AppTheme.textPrimary,
+                          color: AppTheme.textSecondary,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  const Divider(height: 1),
+                  const SizedBox(height: 12),
+                  // Action buttons
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      TextButton.icon(
+                        onPressed: () => controller.navigateToEditInvoice(invoice),
+                        icon: const Icon(PhosphorIconsRegular.pencilSimple, size: 18),
+                        label: const Text('Edit'),
+                        style: TextButton.styleFrom(
+                          foregroundColor: AppTheme.primaryColor,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      TextButton.icon(
+                        onPressed: () => controller.deleteInvoice(invoice.id),
+                        icon: const Icon(PhosphorIconsRegular.trash, size: 18),
+                        label: const Text('Delete'),
+                        style: TextButton.styleFrom(
+                          foregroundColor: AppTheme.errorColor,
                         ),
                       ),
                     ],
                   ),
                 ],
               ),
-
-              const SizedBox(height: 16),
-              const Divider(height: 1),
-              const SizedBox(height: 12),
-
-              // Action buttons
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  TextButton.icon(
-                    onPressed: () => controller.navigateToEditInvoice(invoice),
-                    icon: const Icon(PhosphorIconsRegular.pencilSimple, size: 18),
-                    label: const Text('Edit'),
-                    style: TextButton.styleFrom(
-                      foregroundColor: AppTheme.primaryColor,
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  TextButton.icon(
-                    onPressed: () => controller.deleteInvoice(invoice.id),
-                    icon: const Icon(PhosphorIconsRegular.trash, size: 18),
-                    label: const Text('Delete'),
-                    style: TextButton.styleFrom(
-                      foregroundColor: AppTheme.errorColor,
-                    ),
-                  ),
-                ],
-              ),
-            ],
+            ),
           ),
         ),
       ),

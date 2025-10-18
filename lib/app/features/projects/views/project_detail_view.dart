@@ -3,6 +3,7 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../core/widgets/gradient_app_bar.dart';
 import '../../../data/models/invoice_model.dart';
 import '../../../data/models/project_model.dart';
 import '../../../data/services/storage_service.dart';
@@ -52,9 +53,9 @@ class ProjectDetailView extends StatelessWidget {
     }
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Project Details'),
-        elevation: 0,
+      appBar: GradientAppBar(
+        title: 'Project Details',
+        showBackButton: true,
         actions: [
           IconButton(
             icon: const Icon(PhosphorIconsRegular.pencilSimple),

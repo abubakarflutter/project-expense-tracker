@@ -56,6 +56,9 @@ dependencies:
   # Modern beautiful icons
   phosphor_flutter: ^2.1.0
 
+  # Expandable cards
+  expandable: ^5.0.1
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

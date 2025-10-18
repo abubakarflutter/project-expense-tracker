@@ -3,6 +3,7 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:get/get.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../core/widgets/gradient_app_bar.dart';
 import '../../../data/services/storage_service.dart';
 
 class SettingsPage extends StatefulWidget {
@@ -37,9 +38,8 @@ class _SettingsPageState extends State<SettingsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Settings'),
-        elevation: 0,
+      appBar: GradientAppBar(
+        title: 'Settings',
       ),
       body: ListView(
         padding: const EdgeInsets.all(8),

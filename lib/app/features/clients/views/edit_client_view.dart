@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/custom_button.dart';
 import '../../../core/widgets/custom_text_field.dart';
+import '../../../core/widgets/gradient_app_bar.dart';
 import '../controllers/edit_client_controller.dart';
 
 class EditClientView extends StatelessWidget {
@@ -14,9 +15,9 @@ class EditClientView extends StatelessWidget {
     final controller = Get.put(EditClientController());
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Edit Client'),
-        elevation: 0,
+      appBar: GradientAppBar(
+        title: 'Edit Client',
+        showBackButton: true,
         actions: [
           TextButton(
             onPressed: controller.resetFields,

@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/custom_button.dart';
 import '../../../core/widgets/custom_text_field.dart';
+import '../../../core/widgets/gradient_app_bar.dart';
 import '../controllers/add_project_controller.dart';
 
 class AddProjectView extends StatelessWidget {
@@ -15,9 +16,9 @@ class AddProjectView extends StatelessWidget {
     final controller = Get.put(AddProjectController());
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Add Project'),
-        elevation: 0,
+      appBar: GradientAppBar(
+        title: 'Add Project',
+        showBackButton: true,
         actions: [
           TextButton(
             onPressed: controller.clearFields,
